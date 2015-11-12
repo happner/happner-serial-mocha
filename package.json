@@ -1,0 +1,40 @@
+{
+  "name": "serial-mocha",
+  "version": "0.0.1",
+  "description": "Run mocha tests serially",
+  "main": "index.js",
+  "author": "Don Vawter",
+  "license": "MIT",
+  "dependencies": {
+    "assert": "^1.3.0",
+    "bluebird": "^3.0.2",
+    "colors": "^1.1.2",
+    "expect": "^1.12.2",
+    "minimist": "^1.2.0",
+    "mocha": "^2.3.3"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-babel-wrap": "^0.2.3"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "bin": "./bin/cli.js",
+  "repository": {
+    "url": "git+ssh://git@bitbucket.org/donniev/serial-mocha.git",
+    "type": "git"
+  },
+  "keywords": [
+    "mocha",
+    "promises",
+    "serial"
+  ],
+  "contributors": [
+    {
+      "name": "Don Vawter",
+      "email": "donvawter@mac.com"
+    }
+  ],
+  "homepage": "https://bitbucket.org/donniev/serial-mocha#readme"
+}
