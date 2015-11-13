@@ -11,22 +11,38 @@ var Promise = require("bluebird"),
 	SPR = require("./lib/serialPromiseRunner"),
 	minimist = require("minimist"),
 	path = require("path"),
-	colors = require("colors/safe");
+	colors = require("colors/safe"),
+		level=0,
+		indent="\t";
 
-var writeResults = (results)=> {
-	let out = [];
-	for (let testFile in results) {
-					let _tmp = {};
-			_tmp.testFile = path.resolve(testFile);
-			_tmp.tests = [];
-			var item = results[testFile].results.specDone;
-			item.forEach(function (value, key) {
-				_tmp.tests.push({testName: value.testName, status: value.status, reason: value.reason});
+	var walkObject = (obj,level)=> {
+		let theIndent="";
+		for(let i=0;i<level;i++) {
+			theIndent += indent;
+		}
+		if (obj.file) {
+				console.log(theIndent+"File: "+ obj.file);
+			}
+		if (obj.suite) {
+			console.log(theIndent+"Suite: "+ obj.suite);
+		}
+		if (obj.tests) {
+			obj.tests.forEach((test)=>{
+				//console.log(test.test.title);
+				//console.log(test.test.status);
+				//console.log(test.error);
+				console.log(theIndent+indent+"Test: "+test.test.title+ "  "+test.test.status + ((test.error)?" Reason: "+test.error:""));
+			})
+		}
+		if (obj.suites) {
+			obj.suites.forEach((suite)=> {
+				//if(obj.suite){
+				//	console.log(obj.suite +" Nested Suites:");
+				//}
+				walkObject(suite,level+1);
 			});
-			out.push(_tmp);
+		}
 	}
-	return out;
-}
 module.exports.runTasks = (theTasks, theReporter, saveData)=> new Promise((resolve, reject)=> {
 	let theArgs = minimist(process.argv.slice(2));
 	if(theArgs.reporter){
@@ -69,13 +85,14 @@ module.exports.runTasks = (theTasks, theReporter, saveData)=> new Promise((resol
 		.then((res)=> {
 
 			//console.log(util.inspect(res,{depth:null}));
-			if(saveData){
-				res=writeResults(res);
-			}else{
+			if(!saveData){
 				res=null;
 			}
 			if(res && !theReporter){
-				console.log(util.inspect(res,{depth:null}));
+				for (let file in res){
+				walkObject(res[file].results,0);
+				}
+				//console.log(walkObject(res.results));
 			}
 			resolve(res);
 		})
@@ -86,6 +103,6 @@ module.exports.runTasks = (theTasks, theReporter, saveData)=> new Promise((resol
 if ((argv._.length > 1) && argv._[1].indexOf("index.js") !== -1) {
 	module.exports.runTasks()
 		.then((results)=> {
-		})
+		console.log("finished with",results )})
 		.catch((err)=>console.log(err, err.stack));
 }

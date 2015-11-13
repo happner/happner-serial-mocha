@@ -3,7 +3,7 @@
 var argv=require("minimist")(process.argv.splice(2));
 var tasks=argv._;
 var reporter=argv.reporter;
-var savedata=argv.sj;
+var savedata=argv.sm;
 var sh=require("../index.js");
 
 sh.runTasks(tasks,reporter,savedata)

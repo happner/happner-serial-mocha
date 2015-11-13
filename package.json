@@ -1,6 +1,6 @@
 {
   "name": "serial-mocha",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Run mocha tests serially",
   "main": "index.js",
   "author": "Don Vawter",
@@ -22,7 +22,7 @@
   },
   "bin": "./bin/cli.js",
   "repository": {
-    "url": "git+ssh://git@bitbucket.org/donniev/serial-mocha.git",
+    "url": "https://bitbucket.org/donniev/serial-mocha.git",
     "type": "git"
   },
   "keywords": [
