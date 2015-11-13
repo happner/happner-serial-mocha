@@ -1,6 +1,6 @@
 {
   "name": "serial-mocha",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Run mocha tests serially",
   "main": "index.js",
   "author": "Don Vawter",

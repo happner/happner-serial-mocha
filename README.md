@@ -59,112 +59,170 @@ If saveData is false and no customer reporter is provided the default mocha repo
 
 ##Sample output (command line usage)
 ```
-> serial-mocha  --sm  -- test/*.spec.js 
-[ { testFile: '/Volumes/DataDrive/donnievbitbucket/serial-mocha/test/testBasic.spec.js',
-    tests: 
-     [ { testName: 'firstTestIt', status: 'passed', reason: '' },
-       { testName: 'antotherTestI', status: 'passed', reason: '' } ] },
-  { testFile: '/Volumes/DataDrive/donnievbitbucket/serial-mocha/test/testBasic2.spec.js',
-    tests: 
-     [ { testName: 'secondtestIt',
-         status: 'failed',
-         reason: 'Expected true to be false' } ] },
-  { testFile: '/Volumes/DataDrive/donnievbitbucket/serial-mocha/test/testBasic3.spec.js',
-    tests: 
-     [ { testName: 'third test',
-         status: 'failed',
-         reason: 'Expected \'one\' to equal \'seven\'' },
-       { testName: 'fourth test',
-         status: 'failed',
-         reason: 'Expected true to be false' } ] } ]
+> serial-mocha --sm -- test/*.spec.js 
+File: /Volumes/DataDrive/donnievbitbucket/serial-mocha/dist/test/testBasic.spec.js
+        Suite: first test
+                Test: firstTestIt  passed
+        Suite: another test
+                Test: antotherTestI  passed
+File: /Volumes/DataDrive/donnievbitbucket/serial-mocha/dist/test/testBasic2.spec.js
+        Suite: second test
+                Test: secondtestIt  failed Reason: Expected true to be false
+File: /Volumes/DataDrive/donnievbitbucket/serial-mocha/dist/test/testBasic3.spec.js
+        Suite: third test Suite
+                Test: third test  failed Reason: Expected 'one' to equal 'seven'
+        Suite: fourth test Suite
+                Test: fourth test  failed Reason: Expected true to be false
+File: /Volumes/DataDrive/donnievbitbucket/serial-mocha/dist/test/testNested.spec.js
+        Suite: first test Suite
+                Test: first test  failed Reason: Expected 'one' to equal 'seven'
+        Suite: second test Suite
+                Test: second test  failed Reason: Expected true to be false
+                Suite: nested suite
+                        Test: third test  passed
+                        Test: fourth test  failed Reason: Expected 'one' to equal 'six'
 
-        
 $> serial-mocha    -- test/*.spec.js 
-   
-   
-     first test
-       ✓ firstTestIt
-   
-     another test
-       ✓ antotherTestI (1002ms)
-   
-   
-     2 passing (1s)
-   
-   
-   
-     second test
-       1) secondtestIt
-   
-   
-     0 passing (18ms)
-     1 failing
-   
-     1) second test secondtestIt:
-        Error: Expected true to be false
-         at Object.assert [as default] (node_modules/expect/lib/assert.js:20:9)
-         at Expectation.toBe (node_modules/expect/lib/Expectation.js:76:24)
-         at Context.<anonymous> (test/testBasic2.spec.js:9:16)
-   
-   
-   
-   
-   
-     third test Suite
-       1) third test
-   
-     fourth test Suite
-       2) fourth test
-   
-   
-     0 passing (21ms)
-     2 failing
-   
-     1) third test Suite third test:
-   
-         Error: Expected 'one' to equal 'seven'
-         + expected - actual
-   
-         -one
-         +seven
-         
-         at Object.assert [as default] (node_modules/expect/lib/assert.js:20:9)
-         at Expectation.toEqual (node_modules/expect/lib/Expectation.js:89:26)
-         at Context.<anonymous> (test/testBasic3.spec.js:10:17)
-   
-     2) fourth test Suite fourth test:
-        Error: Expected true to be false
-         at Object.assert [as default] (node_modules/expect/lib/assert.js:20:9)
-         at Expectation.toBe (node_modules/expect/lib/Expectation.js:76:24)
-         at Context.<anonymous> (test/testBasic3.spec.js:20:16)
-   
+ 
+
+  first test
+    ✓ firstTestIt
+
+  another test
+    ✓ antotherTestI (1002ms)
+
+
+  2 passing (1s)
+
+
+
+  second test
+    1) secondtestIt
+
+
+  0 passing (19ms)
+  1 failing
+
+  1) second test secondtestIt:
+     Error: Expected true to be false
+      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
+      at Expectation.toBe (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:76:24)
+      at Context.<anonymous> (test/testBasic2.spec.js:9:16)
+
+
+
+
+
+  third test Suite
+    1) third test
+
+  fourth test Suite
+    2) fourth test
+
+
+  0 passing (22ms)
+  2 failing
+
+  1) third test Suite third test:
+
+      Error: Expected 'one' to equal 'seven'
+      + expected - actual
+
+      -one
+      +seven
+      
+      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
+      at Expectation.toEqual (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:89:26)
+      at Context.<anonymous> (test/testBasic3.spec.js:10:17)
+
+  2) fourth test Suite fourth test:
+     Error: Expected true to be false
+      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
+      at Expectation.toBe (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:76:24)
+      at Context.<anonymous> (test/testBasic3.spec.js:17:16)
+
+
+
+
+
+  first test Suite
+    1) first test
+
+  second test Suite
+    2) second test
+    nested suite
+      ✓ third test
+      3) fourth test
+
+
+  1 passing (22ms)
+  3 failing
+
+  1) first test Suite first test:
+
+      Error: Expected 'one' to equal 'seven'
+      + expected - actual
+
+      -one
+      +seven
+      
+      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
+      at Expectation.toEqual (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:89:26)
+      at Context.<anonymous> (test/testNested.spec.js:10:17)
+
+  2) second test Suite second test:
+     Error: Expected true to be false
+      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
+      at Expectation.toBe (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:76:24)
+      at Context.<anonymous> (test/testNested.spec.js:17:16)
+
+  3) second test Suite nested suite fourth test:
+
+      Error: Expected 'one' to equal 'six'
+      + expected - actual
+
+      -one
+      +six
+      
+      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
+      at Expectation.toEqual (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:89:26)
+      at Context.<anonymous> (test/testNested.spec.js:31:18)
+
+
+
+
    
 
 ```
 
-##Data returned on promise resolution
+##Test information returned on promise resolution
 
 ```
-[ { testFile: '/Volumes/DataDrive/donnievbitbucket/serial-mocha/test/testBasic.spec.js',
-    tests: 
-     [ { testName: 'firstTestIt', status: 'passed', reason: '' },
-       { testName: 'antotherTestI', status: 'passed', reason: '' } ] },
-  { testFile: '/Volumes/DataDrive/donnievbitbucket/serial-mocha/test/testBasic2.spec.js',
-    tests: 
-     [ { testName: 'secondtestIt',
-         status: 'failed',
-         reason: 'Expected true to be false' } ] },
-  { testFile: '/Volumes/DataDrive/donnievbitbucket/serial-mocha/test/testBasic3.spec.js',
-    tests: 
-     [ { testName: 'third test',
-         status: 'failed',
-         reason: 'Expected \'one\' to equal \'seven\'' },
-       { testName: 'fourth test',
-         status: 'failed',
-         reason: 'Expected true to be false' } ] } ]
-
-        
+{
+	test:{
+		async: 1
+		duration: 3
+		file: "/Volumes/DataDrive/test_worker/dist/test/testBasic2.spec.js"
+		pending: false
+		status: "failed"
+		sync: false
+		timedOut: false
+		title: "secondtestIt"
+		type: "test
+  	},
+  	error:"error Message"
+}        
 ```
+For at given test file the information is in the form:
 
-
-
+```
+{file:xxxx,
+ suites:[
+    {
+     suite:"suitename",
+     suites:[],  //array of nested suites
+     tests:[]  //array of tests
+     }
+   ]
+}
+```

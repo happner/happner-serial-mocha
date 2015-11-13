@@ -7,5 +7,7 @@
 1. release initial version
 ## 2015/11/12 DLV publish and tag 0.0.2 published
 1. Changed to use heirarchy for results
+## 2015/11/12 DLV publish and tag 0.0.3 published
+1. Cleanup and edit README
 
 
