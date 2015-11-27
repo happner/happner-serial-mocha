@@ -10,4 +10,7 @@
 ## 2015/11/12 DLV publish and tag 0.0.3 published
 1. Cleanup and edit README
 
+## 2015/11/27 DLV publish and tag 0.0.4 published
+1. latest version of expect fails on global install
+
 
