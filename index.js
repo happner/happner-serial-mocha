@@ -11,6 +11,7 @@ var Promise = require("bluebird"),
 	minimist = require("minimist"),
 	path = require("path"),
 	colors = require("colors/safe"),
+	fs = require("fs-extra")
 	indent="\t";
 
 var walkObject = function(obj, level) {
@@ -64,6 +65,7 @@ module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterD
 		if (theArgs.d) {
 			try {
 				theReporterDirectory = path.resolve(theArgs.d);
+				fs.ensureDirSync(theReporterDirectory);
 			} catch (ex) {
 				//purposely silent
 			}
@@ -107,7 +109,6 @@ module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterD
 					var reportFile = theReporterDirectory + path.sep + Date.now() + '.json';
 
 					try{
-						var fs = require('fs');
 						fs.writeFileSync(reportFile, JSON.stringify(res, null, 2));
 					}catch(e){
 						console.log('failed writing to report file:', reportFile);
