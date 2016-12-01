@@ -44,21 +44,33 @@ var walkObject = function(obj, level) {
 	}
 };
 
-module.exports.runTasks = function(theTasks, theReporter, saveData) {
+module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterDirectory) {
+
+	console.log('in runTasks:::', theTasks, theReporter, saveData, theReporterDirectory);
 
 	return new Promise(function (resolve, reject) {
 
 		var theArgs = minimist(process.argv.slice(2));
 
-		if (theArgs.reporter) {
+
+		if (theArgs.r) {
 			try {
-				var _t = require(path.resolve(theArgs.reporter));
-				theReporter = path.resolve(theArgs.reporter);
+				theReporter = path.resolve(theArgs.r);
 			} catch (ex) {
 				//purposely silent
 			}
 		}
+
+		if (theArgs.d) {
+			try {
+				theReporterDirectory = path.resolve(theArgs.d);
+			} catch (ex) {
+				//purposely silent
+			}
+		}
+
 		if (!theReporter) theReporter = null;
+
 		theTasks = theTasks || theArgs._;
 
 		if (saveData === undefined) {
@@ -87,15 +99,21 @@ module.exports.runTasks = function(theTasks, theReporter, saveData) {
 
 		spr.runTasks()
 			.then(function (res) {
-				//console.log(util.inspect(res,{depth:null}));
-				if (!saveData) res = null;
 
-				if (res && !theReporter) {
-					for (var file in res) {
-						walkObject(res[file].results, 0);
+				for (var file in res) walkObject(res[file].results, 0);
+
+				if (theReporterDirectory != null && res){
+
+					var reportFile = theReporterDirectory + path.sep + Date.now() + '.json';
+
+					try{
+						var fs = require('fs');
+						fs.writeFileSync(reportFile, JSON.stringify(res, null, 2));
+					}catch(e){
+						console.log('failed writing to report file:', reportFile);
 					}
-					//console.log(walkObject(res.results));
 				}
+
 				resolve(res);
 			})
 			.catch(reject)

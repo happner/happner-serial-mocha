@@ -10,22 +10,22 @@ the data in the resolved promise.
 
 Because of a deficiency in mocha, __mocha.run cannot be called multiple times. It does not clean up after itself and residual information from previous calls corrupts subsequent runs. In order to overcome this we fork a new process for each test. The implications of that are that it requires about 30 msec to spin up the process and uses about 10mb of memory. Therefor this module is not designed to run 1000's of tests sequentially.
 
-Note: The module uses generators so works in node Argon or greater or with node v.12+ with the --harmony flag
-
-
 ##Installation
 
 ```
-npm install serial-mocha --save-dev (or -g if you are going to run from command line)
+npm install happner-serial-mocha --save-dev (or -g if you are going to run from command line)
+
+
 ```
 
 ##Usage##
 1. from the command line (requires a global install):
 
 ```
-serial-mocha [--reporter <path to custom reporter>] [--sm --] <path to test files may be a glob>
+serial-mocha [-r <path to custom reporter>] [-d <path to report file output directory>] [--sm --] <path to test files may be a glob>
 ```
-1. reporter - we will forward that to mocha following the usual mocha rules. 
+1. r - we will forward that to mocha following the usual mocha rules.
+1. d - report file ourput directory
 1. sm   if present we use the default serial-mocha reporter. If absent we use the mocha default.
 
 NOTE: The -- after --sm is not a typo. If you don't add it your first test file will be assigned to sm which I am sure you don't want.
@@ -33,6 +33,8 @@ NOTE: The -- after --sm is not a typo. If you don't add it your first test file 
 If you just want the default mocha reporter but want you tests run serially just use this:
 ```
 serial-mocha <path to test files>
+
+//NB you can use wildcards: serial-mocha test/*.js -r lib/serialReporter -d test/reports
 ```
 
 ##Programatically##
@@ -41,7 +43,7 @@ serial-mocha <path to test files>
 
 var sm=require("serial-mocha');
 var taskFiles=["./test/foo.spec.js","./test/bar.spec.js"];
-sm.runTasks(taskFiles,null,true)
+sm.runTasks(taskFiles,null,true, "/my/test/reports")
 	.then((results)=>{
    		//Do what you want with data
 	})
@@ -52,6 +54,7 @@ The parameters for runTasks:
 1. taskFiles - array of file names of task files.
 1. reporter -- path to a custom reporter use null to use mocha default
 1. saveData - if true information on tests will be returned in resolved promise. (See information below).
+1. test report directory
 
 If saveData is true and no custom reporter is provided the serial-mocha default reporter will be used.
 If saveData is true and a custom reporter is provided that reporter will be used
