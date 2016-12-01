@@ -78,9 +78,11 @@ module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterD
 
 		if (!theArgs) theArgs = {};
 
-		if (theReporter === true) theArgs.r = './serialReporter';
+		var defaultReporter = path.dirname(__filename) + path.sep  + 'lib' + path.sep + 'serialReporter';
 
-		if (theArgs.r == 'y')  theArgs.r = './serialReporter';
+		if (theReporter === true) theArgs.r = defaultReporter;
+
+		if (theArgs.r == 'y')  theArgs.r = defaultReporter;
 
 		if (theArgs.r) {
 
