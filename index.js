@@ -47,47 +47,34 @@ var walkObject = function(obj, level) {
 
 module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterDirectory) {
 
-	console.log('in runTasks:::', theTasks, theReporter, saveData, theReporterDirectory);
-
 	return new Promise(function (resolve, reject) {
 
 		var theArgs = minimist(process.argv.slice(2));
 
+		if (!theArgs) theArgs = {};
+
+		if (theReporter === true) theArgs.r = './serialReporter';
+
+		if (theArgs.r == 'y')  theArgs.r = './serialReporter';
 
 		if (theArgs.r) {
-			try {
-				theReporter = path.resolve(theArgs.r);
-			} catch (ex) {
-				//purposely silent
-			}
+
+			try{ theReporter = path.resolve(theArgs.r); }
+			catch(e){}
 		}
 
-		if (theArgs.d) {
-			try {
-				theReporterDirectory = path.resolve(theArgs.d);
-				fs.ensureDirSync(theReporterDirectory);
-			} catch (ex) {
-				//purposely silent
-			}
-		}
+		if (theArgs.d) theReporterDirectory = path.resolve(theArgs.d);
+
+		if (theReporterDirectory) fs.ensureDirSync(theReporterDirectory);
 
 		if (!theReporter) theReporter = null;
 
 		theTasks = theTasks || theArgs._;
 
-		if (saveData === undefined) {
+		if (theArgs.sm == 'y') saveData = true;
+		else saveData = false;
 
-			if (theArgs.sm !== undefined) {
-				if (typeof theArgs.sm === 'boolean') {
-					saveData = theArgs.sm;
-				} else if (typeof theArgs.sm === 'string') {
-					saveData = (theArgs.sm.toLowerCase() === 'true') || (theArgs.sm.toLowerCase() === 't') || (theArgs.sm.toLowerCase() === 'yes') || (theArgs.sm.toLowerCase() === 'y')
-				}
-			}
-			if (saveData === undefined) saveData = false;
-		}
 		var tasks = [];
-		var results = {};
 
 		theTasks.forEach(function (test) {
 			tasks.push({
@@ -100,28 +87,31 @@ module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterD
 		var spr = new SPR(tasks);
 
 		spr.runTasks()
-			.then(function (res) {
 
-				for (var file in res) walkObject(res[file].results, 0);
+		.then(function (res) {
 
-				if (theReporterDirectory != null && res){
+			for (var file in res) walkObject(res[file].results, 0);
 
-					var reportFile = theReporterDirectory + path.sep + Date.now() + '.json';
+			if (theReporterDirectory != null && res){
 
-					try{
-						fs.writeFileSync(reportFile, JSON.stringify(res, null, 2));
-					}catch(e){
-						console.log('failed writing to report file:', reportFile);
-					}
+				var reportFile = theReporterDirectory + path.sep + Date.now() + '.json';
+
+				try{
+					fs.writeFileSync(reportFile, JSON.stringify(res, null, 2));
+				}catch(e){
+					console.log('failed writing to report file:', reportFile);
 				}
+			}
 
-				resolve(res);
-			})
-			.catch(reject)
-			.finally(function () {
-					spr = undefined;
-				}
-			)
+			resolve(res);
+		})
+
+		.catch(reject)
+
+		.finally(function () {
+				spr = undefined;
+			}
+		)
 	});
 };
 
@@ -129,6 +119,6 @@ if ((argv._.length > 1) && argv._[1].indexOf("index.js") !== -1) {
 
 	module.exports.runTasks()
 		.then(function(results){
-		console.log("finished with",results )})
+		console.log("finished, tests count: ", Object.keys(results).length )})
 		.catch(function(err){console.log(err, err.stack)});
 }

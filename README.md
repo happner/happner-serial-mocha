@@ -15,6 +15,7 @@ Because of a deficiency in mocha, __mocha.run cannot be called multiple times. I
 ```
 npm install happner-serial-mocha --save-dev (or -g if you are going to run from command line)
 
+npm test
 
 ```
 
