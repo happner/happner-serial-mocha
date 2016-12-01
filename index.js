@@ -14,38 +14,63 @@ var Promise = require("bluebird"),
 	fs = require("fs-extra")
 	indent="\t";
 
-var walkObject = function(obj, level) {
+var duration = 0;
+
+var aggregateResults = function(obj, level, aggregatedResults) {
 
 	var theIndent="";
+
+	if (!aggregatedResults.prepared){
+
+		aggregatedResults.files = 0;
+		aggregatedResults.suites = 0;
+		aggregatedResults.tests = {
+			count:0,
+			statuses:{}
+		};
+		aggregatedResults.prepared = true;
+	}
 
 	for(var i=0;i<level;i++) {
 		theIndent += indent;
 	}
 
-	if (obj.file) console.log(theIndent+"File: "+ obj.file);
+	if (obj.file) aggregatedResults.files++;//console.log(theIndent+"File: "+ obj.file);
 
-	if (obj.suite) console.log(theIndent+"Suite: "+ obj.suite);
+	if (obj.suite) aggregatedResults.suites++; //console.log(theIndent+"Suite: "+ obj.suite);
 
 	if (obj.tests) {
+
 		obj.tests.forEach(function(test){
+
+			aggregatedResults.tests.count++;
+
+			if (aggregatedResults.tests.statuses[test.test.status] == null) aggregatedResults.tests.statuses[test.test.status] = 0;
+			aggregatedResults.tests.statuses[test.test.status]++;
+
+			duration += test.test.duration;
+
 			//console.log(test.test.title);
 			//console.log(test.test.status);
 			//console.log(test.error);
-			console.log(theIndent+indent+"Test: "+test.test.title+ "  "+test.test.status + ((test.error)?" Reason: "+test.error:""));
+			//console.log(theIndent+indent+"Test: "+test.test.title+ "  "+test.test.status + ((test.error)?" Reason: "+test.error:""));
 		})
 	}
 
 	if (obj.suites) {
+
 		obj.suites.forEach(function(suite) {
 			//if(obj.suite){
 			//	console.log(obj.suite +" Nested Suites:");
 			//}
-			walkObject(suite,level+1);
+			aggregateResults(suite, level+1, aggregatedResults);
 		});
 	}
 };
 
 module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterDirectory) {
+
+	duration = 0;
 
 	return new Promise(function (resolve, reject) {
 
@@ -90,16 +115,29 @@ module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterD
 
 		.then(function (res) {
 
-			for (var file in res) walkObject(res[file].results, 0);
+			var aggregatedResults = {};
 
-			if (theReporterDirectory != null && res){
+			if (res) {
 
-				var reportFile = theReporterDirectory + path.sep + Date.now() + '.json';
+				for (var file in res) aggregateResults(res[file].results, 0, aggregatedResults);
 
-				try{
-					fs.writeFileSync(reportFile, JSON.stringify(res, null, 2));
-				}catch(e){
-					console.log('failed writing to report file:', reportFile);
+				console.log('files: ', aggregatedResults.files);
+				console.log(' L suites: ', aggregatedResults.suites);
+				console.log('   L tests: ', aggregatedResults.tests.count);
+
+				for (var status in aggregatedResults.tests.statuses){
+					console.log('      L ' + status + ': ', aggregatedResults.tests.statuses[status]);
+				}
+
+				if (theReporterDirectory != null){
+
+					var reportFile = theReporterDirectory + path.sep + Date.now() + '.json';
+
+					try{
+						fs.writeFileSync(reportFile, JSON.stringify(res, null, 2));
+					}catch(e){
+						console.log('failed writing to report file:', reportFile);
+					}
 				}
 			}
 
@@ -119,6 +157,6 @@ if ((argv._.length > 1) && argv._[1].indexOf("index.js") !== -1) {
 
 	module.exports.runTasks()
 		.then(function(results){
-		console.log("finished, tests count: ", Object.keys(results).length )})
+		console.log("duration: ", duration )})
 		.catch(function(err){console.log(err, err.stack)});
 }
