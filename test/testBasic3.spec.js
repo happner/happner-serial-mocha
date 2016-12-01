@@ -3,26 +3,26 @@
  *
  */
 'use strict';
-let expect=require("expect");
-describe("third test Suite",()=>{
-	it("third test",(done)=>{
+var expect=require("expect");
+
+describe("third test Suite",function(){
+
+	it("third test",function(done){
+
 		expect(true).toBe(true);
 		expect("one").toEqual("seven");
-	//console.log("four");
+
 		done();
 	})
-
-
-
 });
-describe("fourth test Suite",()=>{
-	it("fourth test",(done)=>{
+
+describe("fourth test Suite",function(){
+
+	it("fourth test",function(done){
+		
 		expect(true).toBe(false);
 		expect("one").toEqual("seven");
-	//console.log("four");
+
 		done();
 	})
-
-
-
-})
+});

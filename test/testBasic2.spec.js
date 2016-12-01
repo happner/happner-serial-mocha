@@ -3,14 +3,14 @@
  *
  */
 'use strict';
-let expect=require("expect");
-describe("second test",()=>{
-	it("secondtestIt",(done)=>{
+var expect=require("expect");
+
+describe("second test",function(){
+
+	it("secondtestIt",function(done){
+
 		expect(true).toBe(false);
 		//console.log("threee");
-	done();
-	})
-
-
-
-})
+		done();
+	});
+});
