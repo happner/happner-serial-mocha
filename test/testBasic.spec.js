@@ -26,3 +26,14 @@ describe("another test",function(){
 	})
 
 })
+
+describe("a skipped test",function(){
+
+	xit("skipped",function(done){
+
+		expect(12).toBe(12);
+		expect(null).toEqual(null);
+		//console.log("two");
+		setTimeout(done, 1000)
+	})
+})

@@ -41,14 +41,16 @@ var aggregateResults = function(obj, level, aggregatedResults) {
 
 	if (obj.tests) {
 
-		obj.tests.forEach(function(test){
+		obj.tests.forEach(function(result){
 
 			aggregatedResults.tests.count++;
 
-			if (aggregatedResults.tests.statuses[test.test.status] == null) aggregatedResults.tests.statuses[test.test.status] = 0;
-			aggregatedResults.tests.statuses[test.test.status]++;
+			if (result.test.pending) result.test.status = 'skipped';
 
-			duration += test.test.duration;
+			if (aggregatedResults.tests.statuses[result.test.status] == null) aggregatedResults.tests.statuses[result.test.status] = 0;
+			aggregatedResults.tests.statuses[result.test.status]++;
+
+			duration += result.test.duration;
 
 			//console.log(test.test.title);
 			//console.log(test.test.status);
