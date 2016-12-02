@@ -14,8 +14,6 @@ var Promise = require("bluebird"),
 	fs = require("fs-extra")
 	indent="\t";
 
-var duration = 0;
-
 var aggregateResults = function(obj, level, aggregatedResults) {
 
 	var theIndent="";
@@ -50,7 +48,6 @@ var aggregateResults = function(obj, level, aggregatedResults) {
 			if (aggregatedResults.tests.statuses[result.test.status] == null) aggregatedResults.tests.statuses[result.test.status] = 0;
 			aggregatedResults.tests.statuses[result.test.status]++;
 
-			duration += result.test.duration;
 
 			//console.log(test.test.title);
 			//console.log(test.test.status);
@@ -72,7 +69,7 @@ var aggregateResults = function(obj, level, aggregatedResults) {
 
 module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterDirectory) {
 
-	duration = 0;
+	var duration = Date.now();
 
 	return new Promise(function (resolve, reject) {
 
@@ -119,11 +116,15 @@ module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterD
 
 		.then(function (res) {
 
+			duration = Date.now() - duration;
+
 			var aggregatedResults = {};
 
 			if (res) {
 
 				for (var file in res) aggregateResults(res[file].results, 0, aggregatedResults);
+
+				aggregatedResults.duration = duration;
 
 				console.log('files: ', aggregatedResults.files);
 				console.log(' L suites: ', aggregatedResults.suites);
@@ -145,7 +146,7 @@ module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterD
 				}
 			}
 
-			resolve(res);
+			resolve({aggregated:aggregatedResults, detail:res});
 		})
 
 		.catch(reject)
@@ -161,6 +162,6 @@ if ((argv._.length > 1) && argv._[1].indexOf("index.js") !== -1) {
 
 	module.exports.runTasks()
 		.then(function(results){
-		console.log("duration: ", duration )})
+		console.log("run ok, duration: ", results.aggregated.duration )})
 		.catch(function(err){console.log(err, err.stack)});
 }
