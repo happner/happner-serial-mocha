@@ -11,8 +11,11 @@ var Promise = require("bluebird"),
 	minimist = require("minimist"),
 	path = require("path"),
 	colors = require("colors/safe"),
-	fs = require("fs-extra")
-	indent="\t";
+	fs = require("fs-extra");
+indent="\t";
+
+var currentSuite;
+var currentTest;
 
 var aggregateResults = function(obj, level, aggregatedResults) {
 
@@ -22,10 +25,14 @@ var aggregateResults = function(obj, level, aggregatedResults) {
 
 		aggregatedResults.files = 0;
 		aggregatedResults.suites = 0;
+
+		aggregatedResults.failed = {};
+
 		aggregatedResults.tests = {
 			count:0,
 			statuses:{}
 		};
+
 		aggregatedResults.prepared = true;
 	}
 
@@ -39,6 +46,8 @@ var aggregateResults = function(obj, level, aggregatedResults) {
 
 	if (obj.tests) {
 
+		currentSuite = obj.suite;
+
 		obj.tests.forEach(function(result){
 
 			aggregatedResults.tests.count++;
@@ -47,6 +56,13 @@ var aggregateResults = function(obj, level, aggregatedResults) {
 
 			if (aggregatedResults.tests.statuses[result.test.status] == null) aggregatedResults.tests.statuses[result.test.status] = 0;
 			aggregatedResults.tests.statuses[result.test.status]++;
+
+			if (result.test.status === 'failed') {
+
+				if (!aggregatedResults.failed[currentSuite]) aggregatedResults.failed[currentSuite] = [];
+
+				aggregatedResults.failed[currentSuite].push({title:result.test.title, reason:result.error});
+			}
 
 
 			//console.log(test.test.title);
@@ -114,47 +130,76 @@ module.exports.runTasks = function(theTasks, theReporter, saveData, theReporterD
 
 		spr.runTasks()
 
-		.then(function (res) {
+			.then(function (res) {
 
-			duration = Date.now() - duration;
+				duration = Date.now() - duration;
 
-			var aggregatedResults = {};
+				var aggregatedResults = {};
 
-			if (res) {
+				if (res) {
 
-				for (var file in res) aggregateResults(res[file].results, 0, aggregatedResults);
+					for (var file in res) aggregateResults(res[file].results, 0, aggregatedResults);
 
-				aggregatedResults.duration = duration;
+					aggregatedResults.duration = duration;
 
-				console.log('files: ', aggregatedResults.files);
-				console.log(' L suites: ', aggregatedResults.suites);
-				console.log('   L tests: ', aggregatedResults.tests.count);
+					console.log(colors.green.bold('\r\nTEST RUN COMPLETE'));
+					console.log(colors.green.bold('-----------------'));
+					console.log('\r\n');
+					console.log(colors.blue('files: '), colors.blue.bold(aggregatedResults.files));
+					console.log(colors.blue(' L suites: '), colors.blue.bold(aggregatedResults.suites));
+					console.log(colors.blue('   L tests: '), colors.blue.bold(aggregatedResults.tests.count));
 
-				for (var status in aggregatedResults.tests.statuses){
-					console.log('      L ' + status + ': ', aggregatedResults.tests.statuses[status]);
-				}
+					for (var status in aggregatedResults.tests.statuses){
 
-				if (theReporterDirectory != null){
+						var __colors = colors.blue;
 
-					var reportFile = theReporterDirectory + path.sep + Date.now() + '.json';
+						if (status === 'failed') __colors = colors.red;
+						if (status === 'passed') __colors = colors.green;
+						if (status === 'skipped') __colors = colors.gray;
 
-					try{
-						fs.writeFileSync(reportFile, JSON.stringify(res, null, 2));
-					}catch(e){
-						console.log('failed writing to report file:', reportFile);
+						console.log(__colors('      L ' + status + ': ' + aggregatedResults.tests.statuses[status]));
+					}
+
+					var failedSuites = Object.keys(aggregatedResults.failed);
+
+					if (failedSuites.length > 0){
+
+						console.error('\r\n');
+						console.error(colors.red('----------'));
+						console.error(colors.red('failures:'));
+						console.error(colors.red('----------'));
+
+						failedSuites.forEach(function(suite){
+							console.warn(colors.red('failed suite: ' + suite));
+
+							aggregatedResults.failed[suite].forEach(function(test){
+								console.warn(colors.red('   L test: ' + test.title));
+								console.warn(colors.red('      L reason: ' + test.reason));
+							});
+						});
+					}
+
+					if (theReporterDirectory != null){
+
+						var reportFile = theReporterDirectory + path.sep + Date.now() + '.json';
+
+						try{
+							fs.writeFileSync(reportFile, JSON.stringify(res, null, 2));
+						}catch(e){
+							console.log(colors.red('failed writing to report file:' + reportFile));
+						}
 					}
 				}
-			}
 
-			resolve({aggregated:aggregatedResults, detail:res});
-		})
+				resolve({aggregated:aggregatedResults, detail:res});
+			})
 
-		.catch(reject)
+			.catch(reject)
 
-		.finally(function () {
-				spr = undefined;
-			}
-		)
+			.finally(function () {
+					spr = undefined;
+				}
+			)
 	});
 };
 
@@ -162,6 +207,7 @@ if ((argv._.length > 1) && argv._[1].indexOf("index.js") !== -1) {
 
 	module.exports.runTasks()
 		.then(function(results){
-		console.log("run ok, duration: ", results.aggregated.duration )})
+			console.log(colors.green("\r\nrun ok, duration: " + results.aggregated.duration ));
+		})
 		.catch(function(err){console.log(err, err.stack)});
 }
