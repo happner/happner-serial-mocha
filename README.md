@@ -42,9 +42,17 @@ serial-mocha <path to test files>
 
 ```
 
-var sm=require("serial-mocha');
+var sm=require("happner-serial-mocha');
 var taskFiles=["./test/foo.spec.js","./test/bar.spec.js"];
 sm.runTasks(taskFiles,null,true, "/my/test/reports")
+	.then((results)=>{
+   		//Do what you want with data
+	})
+	.catch((err)=>console.log(err));
+
+// or you can also pass a directory where the files are:
+
+sm.runTasks('/my/test/directory',null,true, "/my/test/reports")
 	.then((results)=>{
    		//Do what you want with data
 	})
@@ -52,7 +60,7 @@ sm.runTasks(taskFiles,null,true, "/my/test/reports")
 ```
 The parameters for runTasks:
 
-1. taskFiles - array of file names of task files.
+1. taskFiles/Dir - array of file names of task files, or directory path
 1. reporter -- path to a custom reporter use null to use mocha default
 1. saveData - if true information on tests will be returned in resolved promise. (See information below).
 1. test report directory
@@ -61,172 +69,193 @@ If saveData is true and no custom reporter is provided the serial-mocha default 
 If saveData is true and a custom reporter is provided that reporter will be used
 If saveData is false and no customer reporter is provided the default mocha reporter will be used but no useful information will be returned on promise resolution. I have trouble imagining why you would be doing things programatically and not want the data back though.
 
-##Sample output (command line usage)
-```
-> serial-mocha --sm -- test/*.spec.js 
-File: /Volumes/DataDrive/donnievbitbucket/serial-mocha/dist/test/testBasic.spec.js
-        Suite: first test
-                Test: firstTestIt  passed
-        Suite: another test
-                Test: antotherTestI  passed
-File: /Volumes/DataDrive/donnievbitbucket/serial-mocha/dist/test/testBasic2.spec.js
-        Suite: second test
-                Test: secondtestIt  failed Reason: Expected true to be false
-File: /Volumes/DataDrive/donnievbitbucket/serial-mocha/dist/test/testBasic3.spec.js
-        Suite: third test Suite
-                Test: third test  failed Reason: Expected 'one' to equal 'seven'
-        Suite: fourth test Suite
-                Test: fourth test  failed Reason: Expected true to be false
-File: /Volumes/DataDrive/donnievbitbucket/serial-mocha/dist/test/testNested.spec.js
-        Suite: first test Suite
-                Test: first test  failed Reason: Expected 'one' to equal 'seven'
-        Suite: second test Suite
-                Test: second test  failed Reason: Expected true to be false
-                Suite: nested suite
-                        Test: third test  passed
-                        Test: fourth test  failed Reason: Expected 'one' to equal 'six'
+```bash
 
-$> serial-mocha    -- test/*.spec.js 
- 
+//test runs produce both a detailed report, which is pushed to a folder of your choice, and provides aggregated results:
 
-  first test
-    ✓ firstTestIt
-
-  another test
-    ✓ antotherTestI (1002ms)
+> mocha test/testEvents.js
 
 
-  2 passing (1s)
+  internal test
+
+TEST RUN COMPLETE
+-----------------
 
 
-
-  second test
-    1) secondtestIt
-
-
-  0 passing (19ms)
-  1 failing
-
-  1) second test secondtestIt:
-     Error: Expected true to be false
-      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
-      at Expectation.toBe (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:76:24)
-      at Context.<anonymous> (test/testBasic2.spec.js:9:16)
+files:  3
+ L suites:  5
+   L tests:  11
+      L passed: 5
+      L failed: 3
+      L skipped: 3
 
 
+----------
+failures:
+----------
+failed suite: programmatic test
+   L test: a failing test
+      L reason: test error
+failed suite: a test context
+   L test: a failing test in context
+      L reason: test error
+failed suite: programmatic test1
+   L test: a failing test1
+      L reason: test error
+    ✓ runs the tests and checks the events (1702ms)
 
-
-
-  third test Suite
-    1) third test
-
-  fourth test Suite
-    2) fourth test
-
-
-  0 passing (22ms)
-  2 failing
-
-  1) third test Suite third test:
-
-      Error: Expected 'one' to equal 'seven'
-      + expected - actual
-
-      -one
-      +seven
-      
-      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
-      at Expectation.toEqual (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:89:26)
-      at Context.<anonymous> (test/testBasic3.spec.js:10:17)
-
-  2) fourth test Suite fourth test:
-     Error: Expected true to be false
-      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
-      at Expectation.toBe (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:76:24)
-      at Context.<anonymous> (test/testBasic3.spec.js:17:16)
-
-
-
-
-
-  first test Suite
-    1) first test
-
-  second test Suite
-    2) second test
-    nested suite
-      ✓ third test
-      3) fourth test
-
-
-  1 passing (22ms)
-  3 failing
-
-  1) first test Suite first test:
-
-      Error: Expected 'one' to equal 'seven'
-      + expected - actual
-
-      -one
-      +seven
-      
-      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
-      at Expectation.toEqual (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:89:26)
-      at Context.<anonymous> (test/testNested.spec.js:10:17)
-
-  2) second test Suite second test:
-     Error: Expected true to be false
-      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
-      at Expectation.toBe (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:76:24)
-      at Context.<anonymous> (test/testNested.spec.js:17:16)
-
-  3) second test Suite nested suite fourth test:
-
-      Error: Expected 'one' to equal 'six'
-      + expected - actual
-
-      -one
-      +six
-      
-      at Object.assert [as default] (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/assert.js:20:9)
-      at Expectation.toEqual (/Volumes/DataDrive/donnievbitbucket/serial-mocha/node_modules/expect/lib/Expectation.js:89:26)
-      at Context.<anonymous> (test/testNested.spec.js:31:18)
-
-
-
-
-   
 
 ```
 
-##Test information returned on promise resolution
+events:
+-------
+
+*when run programmatically, we can listen in on test events:*
+
+```javascript
+
+ var SerialMocha = require("../lib/serialMocha")
+      , path = require("path")
+      , fs = require("fs")
+      ;
+
+    var testDir = __dirname + path.sep + 'events';
+
+    var reportDir = __dirname + path.sep + 'events-reports';
+
+    var sm = new SerialMocha();
+
+    var currentSuite;
+
+    sm.on('run-started', function(data){
+
+      expect(data.tasks.length).toBe(3);
+      expect(data.timestamp <= Date.now()).toBe(true)
+
+    });
+
+    sm.on('suite-started', function(data){
+
+      expect(data.name != null).toBe(true);
+      expect(data.args.length).toBe(3)
+
+    });
+
+    sm.on('suite-ended', function(data){
+
+      if (data.report.task.indexOf('01-test.js') > -1){
+
+        expect(data.metrics.length).toBe(3);
+        expect(data.metrics[0].name).toBe('01-test.js/programmatic test/a passing test');
+        expect(data.metrics[1].name).toBe('01-test.js/programmatic test/a failing test');
+        expect(data.metrics[2].name).toBe('01-test.js/programmatic test/a skipped test');
+
+      }
+
+      if (data.report.task.indexOf('02-test.js') > -1){
+
+        expect(data.metrics.length).toBe(5);
+
+        expect(data.metrics[4].name).toBe('02-test.js/programmatic test1/a test context/a deeper test context/a passing test in a deeper context');
+        expect(data.metrics[4].status).toBe('passed');
+        expect(data.metrics[4].duration >= 1000).toBe(true);
+      }
+
+      if (data.report.task.indexOf('03-test.js') > -1){
+
+        expect(data.metrics.length).toBe(3);
+        expect(data.metrics[2].status).toBe('skipped');
+
+      }
+    });
+
+    sm.on('run-ended', function(data){
+      expect(data.metrics.length).toBe(11);
+    });
+
+     sm.runTasks(testDir, true, true, reportDir)
+
+          //sm.runTasks(files, 'lib/serialReporter.js', true)
+
+          .then(function(results){
+
+            expect(results.aggregated.tests.count).toBe(11);
+
+            expect(results.aggregated.tests.statuses.passed).toBe(5);
+            expect(results.aggregated.tests.statuses.failed).toBe(3);
+            expect(results.aggregated.tests.statuses.skipped).toBe(3);
+
+            expect(Object.keys(results.detail).length).toBe(3);
+
+            done();
+          })
+
+          .catch(done);
 
 ```
-{
-	test:{
-		async: 1
-		duration: 3
-		file: "/Volumes/DataDrive/test_worker/dist/test/testBasic2.spec.js"
-		pending: false
-		status: "failed"
-		sync: false
-		timedOut: false
-		title: "secondtestIt"
-		type: "test
-  	},
-  	error:"error Message"
-}        
-```
-For at given test file the information is in the form:
 
-```
-{file:xxxx,
- suites:[
-    {
-     suite:"suitename",
-     suites:[],  //array of nested suites
-     tests:[]  //array of tests
-     }
-   ]
-}
+metrics:
+-------
+*the test results, either reported on the suite-ended or run-ended events are made into metrics keyed by their location within the suite, nested contexts or suites are taken into account by adding /'s ie: grand_unified_theory/relativity/special or grand_unified_theory/quantum_mechanics/string:*
+
+```javascript
+
+[
+  {
+    "name": "01-test.js/programmatic test/a passing test",
+    "status": "passed",
+    "duration": 1
+  },
+  {
+    "name": "01-test.js/programmatic test/a failing test",
+    "status": "failed",
+    "duration": 1
+  },
+  {
+    "name": "01-test.js/programmatic test/a skipped test",
+    "status": "skipped",
+    "duration": 0
+  },
+  {
+    "name": "02-test.js/programmatic test1/a passing test1",
+    "status": "passed",
+    "duration": 1
+  },
+  {
+    "name": "02-test.js/programmatic test1/a test context/a failing test in context",
+    "status": "failed",
+    "duration": 0
+  },
+  {
+    "name": "02-test.js/programmatic test1/a test context/a skipped test in context",
+    "status": "skipped",
+    "duration": 0
+  },
+  {
+    "name": "02-test.js/programmatic test1/a test context/a passing test in context",
+    "status": "passed",
+    "duration": 0
+  },
+  {
+    "name": "02-test.js/programmatic test1/a test context/a deeper test context/a passing test in a deeper context",
+    "status": "passed",
+    "duration": 1006
+  },
+  {
+    "name": "03-test.js/programmatic test1/a passing test1",
+    "status": "passed",
+    "duration": 1
+  },
+  {
+    "name": "03-test.js/programmatic test1/a failing test1",
+    "status": "failed",
+    "duration": 1
+  },
+  {
+    "name": "03-test.js/programmatic test1/a skipped test1",
+    "status": "skipped",
+    "duration": 0
+  }
+]
+
 ```

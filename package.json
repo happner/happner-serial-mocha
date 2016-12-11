@@ -1,6 +1,6 @@
 {
   "name": "happner-serial-mocha",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Run mocha tests serially",
   "main": "index.js",
   "author": "Don Vawter, Simon Bishop",
@@ -13,7 +13,8 @@
     "expect": "1.12.0",
     "fs-extra": "^1.0.0",
     "minimist": "^1.2.0",
-    "mocha": "^2.3.3"
+    "mocha": "^2.3.3",
+    "traverse": "^0.6.6"
   },
   "scripts": {
     "start": "node index.js",

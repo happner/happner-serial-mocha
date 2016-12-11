@@ -7,7 +7,7 @@ var expect = require("expect");
 
 describe("internal test",function() {
 
-  it("runs the test suite programmatically",function(done) {
+  it("runs the test files programmatically",function(done) {
 
     var sm = require("../")
       , path = require("path")

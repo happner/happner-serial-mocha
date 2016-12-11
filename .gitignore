@@ -29,4 +29,5 @@ build/Release
 node_modules
 dist
 test/reports
+test/events-reports
 # Created by .ignore support plugin (hsz.mobi)
