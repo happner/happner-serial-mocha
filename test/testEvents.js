@@ -32,7 +32,7 @@ describe("internal test",function() {
     sm.on('suite-started', function(data){
 
       expect(data.name != null).toBe(true);
-      expect(data.args.length).toBe(3)
+      expect(data.args.length).toBe(2)
 
     });
 
@@ -41,6 +41,7 @@ describe("internal test",function() {
       if (data.report.task.indexOf('01-test.js') > -1){
 
         expect(data.metrics.length).toBe(3);
+
         expect(data.metrics[0].name).toBe('01-test.js/programmatic test/a passing test');
         expect(data.metrics[1].name).toBe('01-test.js/programmatic test/a failing test');
         expect(data.metrics[2].name).toBe('01-test.js/programmatic test/a skipped test');
@@ -68,7 +69,7 @@ describe("internal test",function() {
       expect(data.metrics.length).toBe(11);
     });
 
-    sm.runTasks(testDir, true, true, reportDir)
+    sm.runTasks(testDir, null, reportDir)
 
       //sm.runTasks(files, 'lib/serialReporter.js', true)
 

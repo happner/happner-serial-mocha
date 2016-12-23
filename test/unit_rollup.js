@@ -121,9 +121,10 @@ describe("unit rollup",function() {
 
     var SerialMocha = require('../lib/serialMocha');
     var serialMocha = new SerialMocha();
+
+    serialMocha.runMetrics = [];
+
     var rolledUp = serialMocha.__rollup(reportData);
-
-
 
     done();
 

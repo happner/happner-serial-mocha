@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "node index.js test/*.js -r lib/serialReporter -d test/reports"
+    "test": "node bin/cli -t ./test -r ../lib/serialReporter -d ../test/reports"
   },
   "bin": "./bin/cli.js",
   "repository": {

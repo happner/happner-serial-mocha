@@ -28,7 +28,7 @@ describe("internal test",function() {
 
     var reportDir = __dirname + path.sep + 'reports';
 
-    sm.runTasks(files, true, true, reportDir)
+    sm.runTasks(files, null, reportDir)
 
       //sm.runTasks(files, 'lib/serialReporter.js', true)
 

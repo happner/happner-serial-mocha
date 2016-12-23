@@ -10,17 +10,21 @@ commander
 
 	.version (JSON.parse(require('fs').readFileSync(path.resolve(__dirname, '..','package.json'))).version)
 
-	.option ("-f, --folder <val>", "the folder")
+	.option ("-t, --folder <val>", "the folder the tests are in")
+
+	.option ("-r, --reporter <val>", "the reporter")
+
+	.option ("-d, --output <val>", "the folder the reports go to")
 
 	.parse(process.argv);
 
-var testFolder = commander.option('f').folder;
+var testFolder = commander.option('t').folder;
+var reporter = commander.option('r').reporter?commander.option('r').reporter:'./serialReporter';
+var reportsFolder = commander.option('d').output?commander.option('d').output:'../test/reports';
 
 if (testFolder) {
 
-	if (!path.isAbsolute(testFolder)) testFolder = path.resolve(__dirname, testFolder);
-
-	return smInstance.runTasks(testFolder)
+	return smInstance.runTasks(testFolder, reporter, reportsFolder)
 
 		.then(function (results) {
 			console.log(colors.green("\r\nrun ok, duration: " + results.aggregated.duration));
