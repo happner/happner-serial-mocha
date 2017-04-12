@@ -44,7 +44,7 @@ serial-mocha <path to test files>
 
 var sm=require("happner-serial-mocha');
 var taskFiles=["./test/foo.spec.js","./test/bar.spec.js"];
-sm.runTasks(taskFiles,null,true, "/my/test/reports")
+sm.runTasks(taskFiles,null,"/my/test/reports")
 	.then((results)=>{
    		//Do what you want with data
 	})
@@ -52,7 +52,7 @@ sm.runTasks(taskFiles,null,true, "/my/test/reports")
 
 // or you can also pass a directory where the files are:
 
-sm.runTasks('/my/test/directory',null,true, "/my/test/reports")
+sm.runTasks('/my/test/directory',null, "/my/test/reports")
 	.then((results)=>{
    		//Do what you want with data
 	})
@@ -61,13 +61,8 @@ sm.runTasks('/my/test/directory',null,true, "/my/test/reports")
 The parameters for runTasks:
 
 1. taskFiles/Dir - array of file names of task files, or directory path
-1. reporter -- path to a custom reporter use null to use mocha default
-1. saveData - if true information on tests will be returned in resolved promise. (See information below).
-1. test report directory
-
-If saveData is true and no custom reporter is provided the serial-mocha default reporter will be used.
-If saveData is true and a custom reporter is provided that reporter will be used
-If saveData is false and no customer reporter is provided the default mocha reporter will be used but no useful information will be returned on promise resolution. I have trouble imagining why you would be doing things programatically and not want the data back though.
+2. reporter -- path to a custom reporter use null to use mocha default
+3. test report directory
 
 ```bash
 

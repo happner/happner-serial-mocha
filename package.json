@@ -1,6 +1,6 @@
 {
   "name": "happner-serial-mocha",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Run mocha tests serially",
   "main": "index.js",
   "author": "Don Vawter, Simon Bishop",
@@ -38,7 +38,7 @@
     },
     {
       "name": "Simon Bishop",
-      "email": "simon@tenacious.dgital"
+      "email": "simon@tenacious.digital"
     }
   ],
   "homepage": "https://github.com/happner/happner-serial-mocha#readme"
